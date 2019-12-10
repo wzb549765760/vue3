@@ -1,0 +1,45 @@
+<script lang="ts">
+//首先要注意，这里的lang要改成ts才能支持ts写法，文件还是.vue文件
+import { Component, Vue,Provide ,Emit,Watch,Prop，Model,Inject } from "vue-property-decorator";
+import { Form } from 'element-ui';
+@Component({//Component组件装饰器，用于增加一些全局的配置，如filters过滤器等
+    components: {}//components这里放置一些全局的组件
+})
+export default class App extends Vue {//必须继承Vue这个类才能使用
+   //这里写钩子函数，监听器，data，methods，计算属性等
+   //可以在使用typescript的一些类的private public readonly get set等
+   @Provide() private name:string = 'typescript';//定制属性，替换data,以后正常情况下直接这样使用，当然用data也是可以的，但是不推荐
+   @Provide() private count:number = 20;
+	//methods的写法就变成了一个简单的类的方法
+	private clickConsoleName():void{
+		console.log(this.name);
+	}
+   	//Emit 给父组件传值、触发父组件事件
+   	//方式1
+   	private onClickEmit():void{
+		 @Emit("closeDialog",'触发事件传递给父组件的字符串')
+	}
+	//方式2
+	@Emit("closeDialog",'触发事件传递给父组件的字符串')
+	private onClickEmitTwo():void{
+		 console.log('运行完毕这个方法，触发Emit');
+	}
+	//监听route（路由）的变化触发这个方法
+	//Watch 监听属性
+	@Watch('$route') private handleRouteChange(to:any):void{
+        this.initBreadCrumbItems(to);
+    }
+	// Prop 接收父组件传递的数据()里面定义接收的类型
+	@Prop(Object) private Data!: any;//!表示这个值必须传，不然报错，强制性...
+	//Model (组件之间)接收父组件双向数据绑定的数据,暂不做介绍
+
+	//Inject注入 正常情况下使用Provide
+
+	@Ref() public readonly loginForm!: Form;//创建一个Ref,然后这个属性注入到element-ui的Form节点上 ()内的参数是可以自选,也可以不传
+
+	//计算属性,通过get来设置监听事件的变化
+	public get count2 (){
+        return this.count * 2;//当count发生变化的时候，count2也发生变化
+    }
+}
+</script>
